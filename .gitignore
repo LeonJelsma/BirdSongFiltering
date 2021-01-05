@@ -12,3 +12,7 @@ output/plot/
 src/plots/__pycache__/
 
 output/plots/
+
+src/viewOLD/
+
+src/ui/__pycache__/

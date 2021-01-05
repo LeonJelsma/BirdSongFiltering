@@ -1,8 +1,18 @@
 from os.path import join
-import os
 from src import const
-import wave
+from scipy.io import wavfile
+
+from src.wavfile import WavFile
 
 
 def open_wav(name):
-    return wave.open(join(const.AUDIO_DIR, name), "r")
+    rate, data = wavfile.read(join(const.AUDIO_DIR, name))
+    return WavFile(name=name, rate=rate, data=data)
+
+
+def write_wav(wav_file: WavFile):
+    return wavfile.write(filename=join(const.OUTPUT_DIR, wav_file.name), rate=wav_file.rate, data=wav_file.data)
+
+
+def get_ui_file(name: str):
+    return join(const.UI_DIR, name)
