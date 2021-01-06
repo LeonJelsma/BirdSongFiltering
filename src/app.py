@@ -3,9 +3,13 @@ import sys
 
 import numpy
 from PyQt5.QtWidgets import QApplication
+
+from src import util
+from src.plots import frequencies
 from src.ui.mainWindow import MainWindow
 
-#single = util.open_wav("single_mono.wav")
+single = util.open_wav("single_mono.wav")
+frequencies.plot_spectogram(single, single.name)
 #util.write_wav(single)
 
 

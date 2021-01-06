@@ -16,3 +16,5 @@ output/plots/
 src/viewOLD/
 
 src/ui/__pycache__/
+
+*.pyc

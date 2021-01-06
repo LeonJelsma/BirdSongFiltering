@@ -20,3 +20,7 @@ def get_ui_file(name: str):
 
 def get_style(name: str):
     return join(const.STYLES_DIR, name)
+
+
+def get_asset(name: str):
+    return join(const.ASSET_DIR, name)
