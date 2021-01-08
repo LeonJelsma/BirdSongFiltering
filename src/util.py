@@ -1,3 +1,4 @@
+import os
 from os.path import join
 from src import const
 from scipy.io import wavfile
@@ -5,9 +6,9 @@ from scipy.io import wavfile
 from src.wavfile import WavFile
 
 
-def open_wav(name):
-    rate, data = wavfile.read(join(const.AUDIO_DIR, name))
-    return WavFile(name=name, rate=rate, data=data)
+def open_wav(path):
+    rate, data = wavfile.read(path)
+    return WavFile(name=os.path.basename(os.path.normpath(path)), rate=rate, data=data)
 
 
 def write_wav(wav_file: WavFile):
