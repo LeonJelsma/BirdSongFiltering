@@ -1,2 +1,24 @@
 
 .idea/
+
+src/__pycache__/
+
+DSPPython/DSP python V1.zip
+
+DSPPython/
+
+output/plot/
+
+src/plots/__pycache__/
+
+output/plots/
+
+src/viewOLD/
+
+src/recognition/data/
+
+src/ui/__pycache__/
+
+*.pyc
+
+src/filters/__pycache__/
