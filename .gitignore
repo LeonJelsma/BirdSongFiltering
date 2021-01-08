@@ -20,3 +20,5 @@ src/recognition/data/
 src/ui/__pycache__/
 
 *.pyc
+
+src/filters/__pycache__/
