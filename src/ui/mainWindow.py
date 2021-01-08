@@ -7,7 +7,7 @@ from PyQt5 import QtWidgets, uic
 import pyqtgraph as pg
 from PyQt5.QtGui import QMovie, QColor
 
-from PyQt5.QtWidgets import QFileDialog, QGraphicsView
+from PyQt5.QtWidgets import QFileDialog, QGraphicsView, QMessageBox
 from wrapt import synchronized
 from src import const, util
 from src.filters import filters
@@ -19,7 +19,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         uic.loadUi(util.get_ui_file("mainWindow.ui"), self)
-        # self.setStyleSheet(open(util.get_style("light.qss")).read())
+        self.setStyleSheet(open(util.get_style("light.qss")).read())
         self.setWindowTitle("Bird song recognizer")
         self.selectedFileDisplay.setText("Please select a file...")
         self.selectFileButton.clicked.connect(self.open_file_dialog)
@@ -42,6 +42,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.convertButton.setEnabled(False)
         self.convertButton.clicked.connect(self.filter_wav)
 
+        self.clear_graphs()
         self.show()
 
         self.filteredData = None
@@ -49,17 +50,27 @@ class MainWindow(QtWidgets.QMainWindow):
         self.draw_unfiltered_graph()
 
     def open_file_dialog(self):
-        fname = QFileDialog.getOpenFileName(self, 'Open file',
-                                            const.AUDIO_DIR, "Wav files(*.wav)")
-        self.update_selected_wav(fname[0])
+        try:
+            fname = QFileDialog.getOpenFileName(self, 'Open file',
+                                                const.AUDIO_DIR, "Wav files(*.wav)")
+            self.update_selected_wav(fname[0])
+        except PermissionError:
+            print("Permission denied ):")
 
     def clear_graphs(self):
+        self.unfilteredGraph.setYRange(min=0, max=1)
+        self.unfilteredGraph.setXRange(min=0, max=1)
+        self.unfilteredGraph.setYRange(min=0, max=1)
+        self.unfilteredGraph.setXRange(min=0, max=1)
         self.filteredGraph.clear()
         self.unfilteredGraph.clear()
 
     def update_selected_wav(self, file):
         file_name = os.path.basename(os.path.normpath(file))
         self.selectedWav = util.open_wav(file_name)
+        if self.selectedWav.channels > 1:
+            self.show_error_dialog("Selected file has more than 1 audio channel.")
+            return
         self.selectedFileDisplay.setText(file_name)
         self.selectedFileDisplay.plainText = file_name
         if self.selectedWav:
@@ -67,6 +78,18 @@ class MainWindow(QtWidgets.QMainWindow):
             self.convertButton.setEnabled(True)
         else:
             self.convertButton.setEnabled(False)
+
+    #@staticmethod
+    def show_error_dialog(self, message):
+        error_window = QMessageBox()
+        error_window.setIcon(QMessageBox.Information)
+
+        error_window.setText("Error")
+        error_window.setInformativeText(message)
+        error_window.setWindowTitle("Error")
+        error_window.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+
+        error_window.exec_()
 
     def auto_range_unfiltered(self):
         self.unfilteredGraph.setYRange(min=-30000, max=3000)
@@ -104,4 +127,3 @@ class MainWindow(QtWidgets.QMainWindow):
             self.filteredGraph.plot(time, self.filteredData)
             self.auto_range_filtered()
             self.filteredGraph.show()
-

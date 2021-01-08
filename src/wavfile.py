@@ -1,3 +1,4 @@
+from collections import Iterable
 
 
 class WavFile:
@@ -6,3 +7,7 @@ class WavFile:
         self.rate = rate
         self.frames = len(data)
         self.data = data
+        if isinstance(data[0], Iterable):
+            self.channels = len(data[0])
+        else:
+            self.channels = 1
