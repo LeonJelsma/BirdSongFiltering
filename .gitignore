@@ -15,4 +15,8 @@ output/plots/
 
 src/viewOLD/
 
+src/recognition/data/
+
 src/ui/__pycache__/
+
+*.pyc
