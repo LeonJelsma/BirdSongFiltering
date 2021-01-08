@@ -12,6 +12,7 @@ from wrapt import synchronized
 from src import const, util
 from src.filters import filters
 from src.filters.FilterThread import FilterThread
+from src.filters.audiofilter import AudioFilter
 from src.wavfile import WavFile
 
 
@@ -28,6 +29,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.autoRangeFiltered.clicked.connect(self.auto_range_filtered)
         self.resetButton.clicked.connect(self.clear_graphs)
         self.statusLabel.setText("No task")
+
+        self.unfilteredGraph.setMouseEnabled(x=False, y=False)
+        self.filteredGraph.setMouseEnabled(x=False, y=False)
+
         spinner = self.waitingSpinner
 
         spinner.setRoundness(70.0)
@@ -92,18 +97,19 @@ class MainWindow(QtWidgets.QMainWindow):
         error_window.exec_()
 
     def auto_range_unfiltered(self):
-        self.unfilteredGraph.setYRange(min=-30000, max=3000)
+        self.unfilteredGraph.setYRange(min=abs(min(self.selectedWav.data))*1.5, max=max(self.selectedWav.data)*1.5)
         self.unfilteredGraph.setXRange(min=0, max=(self.selectedWav.frames / self.selectedWav.rate))
 
     def auto_range_filtered(self):
-        self.filteredGraph.setYRange(min=-30000, max=3000)
+        self.filteredGraph.setYRange(min=abs(min(self.filteredData))*-1.5, max=max(self.filteredData)*1.5)
         self.filteredGraph.setXRange(min=0, max=(self.selectedWav.frames / self.selectedWav.rate))
 
     def draw_unfiltered_graph(self):
         if self.selectedWav:
             data = np.fromstring(self.selectedWav.data, "Int16")
-
             time = np.arange(0, self.selectedWav.frames) * (1.0 / self.selectedWav.rate)
+
+            self.unfilteredGraph.disableAutoRange()
             self.unfilteredGraph.plot(time, data)
             self.auto_range_unfiltered()
             self.unfilteredGraph.show()
@@ -111,7 +117,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def filter_wav(self):
         self.waitingSpinner.start()
         self.statusLabel.setText("Filtering...")
-        t = FilterThread(data=self.selectedWav.data, filter_func=filters.filter3, return_func=self.set_filtered_data)
+        t = FilterThread(data=self.selectedWav.data, audio_filter=filters.get_test_filter(), return_func=self.set_filtered_data)
         t.start()
 
     @synchronized
