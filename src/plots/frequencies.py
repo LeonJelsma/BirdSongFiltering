@@ -1,7 +1,7 @@
 
 import numpy as np
 from matplotlib.figure import Figure
-
+from wave import Wave_read
 
 def plot_spectogram(wav, title):
     # Extract Raw Audio from Wav File

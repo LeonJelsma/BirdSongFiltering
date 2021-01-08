@@ -15,4 +15,12 @@ def write_wav(wav_file: WavFile):
 
 
 def get_ui_file(name: str):
-    return join(const.UI_DIR, name)
+    return join(const.VIEWS_DIR, name)
+
+
+def get_style(name: str):
+    return join(const.STYLES_DIR, name)
+
+
+def get_asset(name: str):
+    return join(const.ASSET_DIR, name)
