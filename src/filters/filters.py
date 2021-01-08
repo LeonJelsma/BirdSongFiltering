@@ -1,3 +1,4 @@
+from src.filters import butterworth_filter
 from src.filters.audiofilter import AudioFilter
 
 
@@ -10,3 +11,7 @@ def test_filter(x):
 
 def get_test_filter():
     return AudioFilter(test_filter)
+
+
+def get_butterworth_filter():
+    return AudioFilter(butterworth_filter.filter_wav)
