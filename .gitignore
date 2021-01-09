@@ -24,3 +24,5 @@ src/ui/__pycache__/
 src/filters/__pycache__/
 
 output/
+
+venv/

@@ -7,7 +7,7 @@ from src.wavfile import WavFile
 
 
 def open_wav(path):
-    rate, data = wavfile.read(path)
+    rate, data = wavfile.read(os.path.normpath(path))
     return WavFile(name=os.path.basename(os.path.normpath(path)), rate=rate, data=data)
 
 

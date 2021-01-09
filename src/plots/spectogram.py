@@ -16,6 +16,7 @@ from shutil import copy2 as cp
 
 # Colors
 from src import const
+from src.wavfile import WavFile
 
 
 class bcolors:
@@ -30,11 +31,10 @@ class bcolors:
 
 
 # Get file info
-def get_wav_info(wav):
-    frames = wav.readframes(-1)
-    sound_info = np.fromstring(frames, 'int16')
-    frame_rate = wav.getframerate()
-    wav.close()
+def get_wav_info(wav: WavFile):
+    frames = wav.frames
+    sound_info = wav.data
+    frame_rate = wav.rate
     return sound_info, frame_rate
 
 # Define function for plotting

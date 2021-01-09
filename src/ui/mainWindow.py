@@ -77,8 +77,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.unfilteredGraph.clear()
 
     def update_selected_wav(self, file):
+        path = os.path.normpath(file)
         file_name = os.path.basename(os.path.normpath(file))
-        self.selected_wav = util.open_wav(file_name)
+        self.selected_wav = util.open_wav(path)
         if self.selected_wav.channels > 1:
             self.show_error_dialog("Selected file has more than 1 audio channel.")
             return
