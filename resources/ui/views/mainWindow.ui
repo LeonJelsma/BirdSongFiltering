@@ -19,7 +19,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="QTabWidget" name="tabWidget">
+     <widget class="QTabWidget" name="tab_view">
       <property name="maximumSize">
        <size>
         <width>1554</width>
@@ -27,7 +27,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="FilterTab">
        <attribute name="title">
@@ -290,8 +290,54 @@
       </widget>
       <widget class="QWidget" name="tab_2">
        <attribute name="title">
-        <string>Tab 2</string>
+        <string>Spectogram</string>
        </attribute>
+       <widget class="GraphicsLayoutWidget" name="filtered_spectrogram" native="true">
+        <property name="geometry">
+         <rect>
+          <x>810</x>
+          <y>430</y>
+          <width>661</width>
+          <height>421</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="GraphicsLayoutWidget" name="unfiltered_spectrogram" native="true">
+        <property name="geometry">
+         <rect>
+          <x>810</x>
+          <y>10</y>
+          <width>661</width>
+          <height>411</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_5">
+        <property name="geometry">
+         <rect>
+          <x>720</x>
+          <y>30</y>
+          <width>71</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Unfiltered:</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_6">
+        <property name="geometry">
+         <rect>
+          <x>730</x>
+          <y>460</y>
+          <width>71</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Filtered:</string>
+        </property>
+       </widget>
       </widget>
      </widget>
     </item>
@@ -309,6 +355,12 @@
    <class>QtWaitingSpinner</class>
    <extends>QWidget</extends>
    <header>QtWaitingSpinner.QtWaitingSpinner</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>GraphicsLayoutWidget</class>
+   <extends>QWidget</extends>
+   <header>pyqtgraph</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
