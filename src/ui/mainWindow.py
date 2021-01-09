@@ -4,15 +4,14 @@ import os
 import numpy
 import numpy as np
 from PyQt5 import QtWidgets, uic
-import pyqtgraph as pg
 from PyQt5.QtGui import QMovie, QColor
 
-from PyQt5.QtWidgets import QFileDialog, QGraphicsView, QMessageBox
+from PyQt5.QtWidgets import QFileDialog, QMessageBox, QWidget
 from wrapt import synchronized
 from src import const, util
-from src.filters import filters, butterworth_filter
+from src.filters import filters
 from src.filters.FilterThread import FilterThread
-from src.filters.audiofilter import AudioFilter
+from src.plots import spectrogram
 from src.wavfile import WavFile
 
 FILTERS = {
@@ -30,6 +29,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowTitle("Bird song recognizer")
         self.selectedFileDisplay.setText("Please select a file...")
         self.selectFileButton.clicked.connect(self.open_file_dialog)
+        self.tab_view.setCurrentIndex(0)
 
         self.save_wav_button.clicked.connect(self.save_filtered_result)
         self.use_as_input_button.clicked.connect(self.use_result_as_input)
@@ -67,7 +67,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.filtered_wav: WavFile = None
         self.selected_wav: WavFile = None
-        self.draw_unfiltered_graph()
+        self.draw_unfiltered_graphs()
 
     def on_change_filter(self, filter_name):
         self.selected_filter = FILTERS[filter_name]
@@ -86,7 +86,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def use_result_as_input(self):
         self.selected_wav = self.filtered_wav
         self.clear_graphs()
-        self.draw_filtered_graph()
+        self.draw_filtered_graphs()
 
     def clear_graphs(self):
         self.unfilteredGraph.setYRange(min=0, max=1)
@@ -106,7 +106,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.selectedFileDisplay.setText(file_name)
         self.selectedFileDisplay.plainText = file_name
         if self.selected_wav:
-            self.draw_unfiltered_graph()
+            self.draw_unfiltered_graphs()
             self.convertButton.setEnabled(True)
         else:
             self.convertButton.setEnabled(False)
@@ -131,7 +131,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.filteredGraph.setYRange(min=-30000, max=30000)
         self.filteredGraph.setXRange(min=0, max=(self.selected_wav.frames / self.selected_wav.rate))
 
-    def draw_unfiltered_graph(self):
+    def draw_unfiltered_graphs(self):
         if self.selected_wav:
             data = np.fromstring(self.selected_wav.data, "Int16")
             time = np.arange(0, self.selected_wav.frames) * (1.0 / self.selected_wav.rate)
@@ -140,6 +140,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.unfilteredGraph.plot(time, data)
             self.auto_range_unfiltered()
             self.unfilteredGraph.show()
+            spectrogram.get_spectrogram(self.selected_wav, self.unfiltered_spectrogram)
 
     def filter_wav(self):
         min_freq = self.bottom_freq_input.toPlainText()
@@ -154,13 +155,14 @@ class MainWindow(QtWidgets.QMainWindow):
     @synchronized
     def set_filtered_data(self, wav):
         self.filtered_wav = wav
-        self.draw_filtered_graph()
+        self.draw_filtered_graphs()
         self.statusLabel.setText("Done!")
         self.waitingSpinner.stop()
 
-    def draw_filtered_graph(self):
+    def draw_filtered_graphs(self):
         if self.filtered_wav:
             time = np.arange(0, self.filtered_wav.frames) * (1.0 / self.filtered_wav.rate)
             self.filteredGraph.plot(time, self.filtered_wav.data)
             self.auto_range_filtered()
             self.filteredGraph.show()
+            spectrogram.get_spectrogram(self.filtered_wav, self.filtered_spectrogram)
