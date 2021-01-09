@@ -1,4 +1,4 @@
-from src.Butterworth import AUDIO_FILE_LOCATION, ButterworthFilter, OUTPUT_NAME
+from src.Butterworth import ButterworthFilter
 from numpy import exp, sqrt, pi, int16, array
 from scipy.io import wavfile
 

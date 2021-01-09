@@ -27,7 +27,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="FilterTab">
        <attribute name="title">
@@ -290,7 +290,7 @@
       </widget>
       <widget class="QWidget" name="SpectrogramTab">
        <attribute name="title">
-        <string>Spectogram</string>
+        <string>Spectrogram</string>
        </attribute>
        <widget class="GraphicsLayoutWidget" name="filtered_spectrogram" native="true">
         <property name="geometry">
