@@ -1,4 +1,5 @@
-from numpy import pi, sqrt, array, int16, e, append
+from src.Butterworth import AUDIO_FILE_LOCATION, ButterworthFilter, OUTPUT_NAME
+from numpy import exp, sqrt, pi, int16, array
 from scipy.io import wavfile
 
 from src.wavfile import WavFile
@@ -69,9 +70,6 @@ def transform_radix2(vector):  # Fast Fourier Transform function
 
 def main():
     SAMPLE_FREQUENCY, DATA = wavfile.read(AUDIO_FILE_LOCATION)
-    # bandpass = ButterworthFilter(B_FREQ=BOTTOM_FREQUENCY, T_FREQ=TOP_FREQUENCY).bandpass(S_FREQ=SAMPLE_FREQUENCY)
-    # appliedFilter = array(apply_filter(DATA=DATA, XY_Values=bandpass))
-    # wavfile.write(OUTPUT_NAME, SAMPLE_FREQUENCY, appliedFilter.astype(int16))
 
     # Check if the length of data corresponds to a 2**n number:
     POWER_2 = [2 ** x for x in range(50)]  # Create an array with 50 2**n values
@@ -99,8 +97,11 @@ def main():
     ret_val = transform_radix2(DATA)
     print(ret_val)
     txt_file = open("OUTPUT.txt", 'w')
+    new_array = []
     for x in ret_val:
-        txt_file.write(f"{x}")  # Write all datapoints into a text file
+        new_array.append(x)
+    
+    txt_file.write(f"{new_array}") #Write all datapoints into a text file
     txt_file.close()
 
 
