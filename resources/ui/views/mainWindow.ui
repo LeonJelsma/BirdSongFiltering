@@ -235,6 +235,42 @@
                <string>Bottom frequency:</string>
               </property>
              </widget>
+             <widget class="QComboBox" name="filter_selection">
+              <property name="geometry">
+               <rect>
+                <x>358</x>
+                <y>440</y>
+                <width>161</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_4">
+              <property name="geometry">
+               <rect>
+                <x>290</x>
+                <y>440</y>
+                <width>71</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Filter type:</string>
+              </property>
+             </widget>
+             <widget class="QPushButton" name="use_as_input_button">
+              <property name="geometry">
+               <rect>
+                <x>340</x>
+                <y>610</y>
+                <width>93</width>
+                <height>28</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Use as input</string>
+              </property>
+             </widget>
             </widget>
            </item>
           </layout>

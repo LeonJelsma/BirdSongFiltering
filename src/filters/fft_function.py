@@ -1,6 +1,8 @@
 from numpy import pi, sqrt, array, int16, e, append
 from scipy.io import wavfile
 
+from src.wavfile import WavFile
+
 BOTTOM_FREQUENCY = 6000
 TOP_FREQUENCY = 8000
 # AUDIO_FILE_LOCATION = 'audio/single_mono.wav'
@@ -48,18 +50,22 @@ def apply_filter(DATA=None, XY_Values=None):
             n - 4] + XY_Values[4] * Y[n - 3] + XY_Values[5] * Y[n - 2] + XY_Values[6] * Y[n - 1]
     return Y
 
+
 import cmath
-def transform_radix2(vector): # Fast Fourier Transform function
-    n = len(vector) # Length of the numpy ndarray
+
+
+def transform_radix2(vector):  # Fast Fourier Transform function
+    n = len(vector)  # Length of the numpy ndarray
     if n <= 1:  # Base case
         return vector
-    elif n % 2 != 0: # Check if the length of the numpy ndarray is equal to a 2**n
+    elif n % 2 != 0:  # Check if the length of the numpy ndarray is equal to a 2**n
         raise ValueError("Length is not a power of 2")
     else:
         k = n // 2
-        even = transform_radix2(vector[0 : : 2])
-        odd  = transform_radix2(vector[1 : : 2])
+        even = transform_radix2(vector[0:: 2])
+        odd = transform_radix2(vector[1:: 2])
         return [even[i % k] + odd[i % k] * cmath.exp(i * -2j * cmath.pi / n) for i in range(n)]
+
 
 def main():
     SAMPLE_FREQUENCY, DATA = wavfile.read(AUDIO_FILE_LOCATION)
@@ -68,33 +74,43 @@ def main():
     # wavfile.write(OUTPUT_NAME, SAMPLE_FREQUENCY, appliedFilter.astype(int16))
 
     # Check if the length of data corresponds to a 2**n number:
-    POWER_2 = [2**x for x in range(50)] # Create an array with 50 2**n values
+    POWER_2 = [2 ** x for x in range(50)]  # Create an array with 50 2**n values
     # print(POWER_2)
 
     import numpy
     POWER_2_DATA = 0
     count = 0
-    for x in POWER_2: # Run a for loop through the power of 2 array
-        if x >= len(DATA): # If the power of 2 value is larger than the length of the numpy ndarray (sound data)
-            if count == 0: # Check if this is the first time that the value is larger than len(DATA)
+    for x in POWER_2:  # Run a for loop through the power of 2 array
+        if x >= len(DATA):  # If the power of 2 value is larger than the length of the numpy ndarray (sound data)
+            if count == 0:  # Check if this is the first time that the value is larger than len(DATA)
                 # print(x)
-                POWER_2_DATA = x # Set the value of 2**n
-                count = 1 # Set the count to 1 so the next number of 2**n doesn't overwrite the correct number
-            else: # If the count is not equal to 0
+                POWER_2_DATA = x  # Set the value of 2**n
+                count = 1  # Set the count to 1 so the next number of 2**n doesn't overwrite the correct number
+            else:  # If the count is not equal to 0
                 pass
-        else: # If 2**n is not larger than len(DATA)
+        else:  # If 2**n is not larger than len(DATA)
             pass
 
-    DATAPOINTS_NEEDED = POWER_2_DATA - len(DATA) # Subtract the len(DATA) from POWER_2_DATA
-    DATA = numpy.append(DATA, [0 for x in range(DATAPOINTS_NEEDED)]) # Add the correct amount of datapoints to the DATA ndarray to form an 2**n array
+    DATAPOINTS_NEEDED = POWER_2_DATA - len(DATA)  # Subtract the len(DATA) from POWER_2_DATA
+    DATA = numpy.append(DATA, [0 for x in range(
+        DATAPOINTS_NEEDED)])  # Add the correct amount of datapoints to the DATA ndarray to form an 2**n array
     print(len(DATA))
 
     ret_val = transform_radix2(DATA)
     print(ret_val)
     txt_file = open("OUTPUT.txt", 'w')
     for x in ret_val:
-        txt_file.write(f"{x}") #Write all datapoints into a text file
+        txt_file.write(f"{x}")  # Write all datapoints into a text file
     txt_file.close()
+
+
+def filter_wav(wav: WavFile, min_freq, max_freq):
+    sample_freq = wav.rate
+    bandpass = ButterworthFilter(B_FREQ=min_freq, T_FREQ=max_freq).bandpass(S_FREQ=sample_freq)
+    applied_filter = array(apply_filter(DATA=wav.data, XY_Values=bandpass))
+    wav.data = applied_filter.astype(int16)
+    return wav
+
 
 if __name__ == "__main__":
     main()

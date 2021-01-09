@@ -10,15 +10,21 @@ from PyQt5.QtGui import QMovie, QColor
 from PyQt5.QtWidgets import QFileDialog, QGraphicsView, QMessageBox
 from wrapt import synchronized
 from src import const, util
-from src.filters import filters
+from src.filters import filters, butterworth_filter
 from src.filters.FilterThread import FilterThread
 from src.filters.audiofilter import AudioFilter
 from src.wavfile import WavFile
+
+FILTERS = {
+    "Butterworth": filters.get_butterworth_filter,
+    "FTT": filters.get_fft_filter
+}
 
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
+
         uic.loadUi(util.get_ui_file("mainWindow.ui"), self)
         #self.setStyleSheet(open(util.get_style("light.qss")).read())
         self.setWindowTitle("Bird song recognizer")
@@ -26,10 +32,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.selectFileButton.clicked.connect(self.open_file_dialog)
 
         self.save_wav_button.clicked.connect(self.save_filtered_result)
+        self.use_as_input_button.clicked.connect(self.use_result_as_input)
         self.autoRangeUnfiltered.clicked.connect(self.auto_range_unfiltered)
         self.autoRangeFiltered.clicked.connect(self.auto_range_filtered)
         self.resetButton.clicked.connect(self.clear_graphs)
         self.statusLabel.setText("No task")
+
+        self.selected_filter = FILTERS["Butterworth"]
+        self.filter_selection.activated[str].connect(self.on_change_filter)
+        for name, function in FILTERS.items():
+            self.filter_selection.addItem(name)
 
         self.bottom_freq_input.setPlainText("3000")
         self.top_freq_input.setPlainText("8000")
@@ -57,6 +69,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.selected_wav: WavFile = None
         self.draw_unfiltered_graph()
 
+    def on_change_filter(self, filter_name):
+        self.selected_filter = FILTERS[filter_name]
+
     def open_file_dialog(self):
         try:
             fname = QFileDialog.getOpenFileName(self, 'Open file',
@@ -67,6 +82,11 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def save_filtered_result(self):
         util.write_wav(self.filtered_wav)
+
+    def use_result_as_input(self):
+        self.selected_wav = self.filtered_wav
+        self.clear_graphs()
+        self.draw_filtered_graph()
 
     def clear_graphs(self):
         self.unfilteredGraph.setYRange(min=0, max=1)
