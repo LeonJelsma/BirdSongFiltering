@@ -1,12 +1,14 @@
 import concurrent
 import os
+from os.path import join
 
 import numpy
 import numpy as np
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtGui import QMovie, QColor
 
-from PyQt5.QtWidgets import QFileDialog, QMessageBox, QWidget
+from PyQt5.QtWidgets import QFileDialog, QMessageBox, QWidget, QComboBox
+from pyqtgraph import GraphicsLayoutWidget, QtCore
 from wrapt import synchronized
 from src import const, util
 from src.filters import filters
@@ -16,8 +18,14 @@ from src.wavfile import WavFile
 
 FILTERS = {
     "Butterworth": filters.get_butterworth_filter,
-    "FTT": filters.get_fft_filter
+    "FFT": filters.get_fft_filter
 }
+
+EXAMPLES = {}
+for folder in [x[0] for x in os.walk(const.LABELED_BIRD_SOUNDS_DIR)]:
+    if os.path.basename(folder) == 'labeled':
+        continue
+    EXAMPLES[os.path.basename(folder)] = folder
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -25,11 +33,49 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__()
 
         uic.loadUi(util.get_ui_file("mainWindow.ui"), self)
-        #self.setStyleSheet(open(util.get_style("light.qss")).read())
+        # self.setStyleSheet(open(util.get_style("light.qss")).read())
         self.setWindowTitle("Bird song recognizer")
         self.selectedFileDisplay.setText("Please select a file...")
         self.selectFileButton.clicked.connect(self.open_file_dialog)
         self.tab_view.setCurrentIndex(0)
+
+        self.selected_example_1.activated[str].connect(
+            lambda: self.on_change_example(widget=self.selected_example_spectrogram_1,
+                                           name=self.selected_example_1.currentText()))
+        self.selected_example_2.activated[str].connect(
+            lambda: self.on_change_example(widget=self.selected_example_spectrogram_2,
+                                           name=self.selected_example_2.currentText()))
+        self.selected_example_3.activated[str].connect(
+            lambda: self.on_change_example(widget=self.selected_example_spectrogram_3,
+                                           name=self.selected_example_3.currentText()))
+
+        index = 0
+        for name, path in EXAMPLES.items():
+            self.selected_example_1.addItem(name)
+            self.selected_example_2.addItem(name)
+            self.selected_example_3.addItem(name)
+            if index == 0:
+                index = self.selected_example_1.findText(name, QtCore.Qt.MatchFixedString)
+                if index >= 0:
+                    self.selected_example_1.setCurrentIndex(index)
+            elif index == 1:
+                index = self.selected_example_2.findText(name, QtCore.Qt.MatchFixedString)
+                if index >= 0:
+                    self.selected_example_2.setCurrentIndex(index)
+            elif index == 2:
+                index = self.selected_example_3.findText(name, QtCore.Qt.MatchFixedString)
+                if index >= 0:
+                    self.selected_example_3.setCurrentIndex(index)
+            index += 1
+
+        self.on_change_example(widget=self.selected_example_spectrogram_1,
+                               name=self.selected_example_1.currentText())
+
+        self.on_change_example(widget=self.selected_example_spectrogram_2,
+                               name=self.selected_example_2.currentText())
+
+        self.on_change_example(widget=self.selected_example_spectrogram_3,
+                               name=self.selected_example_3.currentText())
 
         self.save_wav_button.clicked.connect(self.save_filtered_result)
         self.use_as_input_button.clicked.connect(self.use_result_as_input)
@@ -68,6 +114,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.filtered_wav: WavFile = None
         self.selected_wav: WavFile = None
         self.draw_unfiltered_graphs()
+
+    @staticmethod
+    def on_change_example(name, widget: GraphicsLayoutWidget):
+        spectrogram.get_spectrogram(
+            wav=util.open_wav(join(join(const.LABELED_BIRD_SOUNDS_DIR, EXAMPLES[name]), "1.wav")),
+            graphics_layout=widget)
 
     def on_change_filter(self, filter_name):
         self.selected_filter = FILTERS[filter_name]

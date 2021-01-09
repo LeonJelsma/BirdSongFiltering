@@ -26,7 +26,8 @@ def get_spectrogram(wav: WavFile, graphics_layout: pyqtgraph.GraphicsLayoutWidge
     # Show the window
     graphics_layout.show()
     # Fit the min and max levels of the histogram to the data available
-    hist.setLevels(np.min(Sxx), np.max(Sxx))
+    print("min: "+ str(np.min(Sxx)) + "max:" + str(np.max(Sxx)))
+    hist.setLevels(0, 40000)
     # This gradient is roughly comparable to the gradient used by Matplotlib
     # You can adjust it and then save it using hist.gradient.saveState()
     hist.gradient.restoreState(
