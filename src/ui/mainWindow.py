@@ -8,6 +8,7 @@ from PyQt5 import QtWidgets, uic
 from PyQt5.QtGui import QMovie, QColor
 
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QWidget, QComboBox
+from PyQt5 import QtGui
 from pyqtgraph import GraphicsLayoutWidget, QtCore
 from wrapt import synchronized
 from src import const, util
@@ -33,6 +34,8 @@ class MainWindow(QtWidgets.QMainWindow):
         super(MainWindow, self).__init__()
 
         uic.loadUi(util.get_ui_file("mainWindow.ui"), self)
+        test = util.get_asset("icon.png")
+        self.setWindowIcon(QtGui.QIcon(util.get_asset("icon.png")))
         # self.setStyleSheet(open(util.get_style("light.qss")).read())
         self.setWindowTitle("Bird song recognizer")
         self.selectedFileDisplay.setText("Please select a file...")
