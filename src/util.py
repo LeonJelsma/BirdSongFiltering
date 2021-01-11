@@ -1,9 +1,9 @@
 import os
 from os.path import join
-from src import const
+import const
 from scipy.io import wavfile
 
-from src.wavfile import WavFile
+from wavfile import WavFile
 
 
 def open_wav(path):

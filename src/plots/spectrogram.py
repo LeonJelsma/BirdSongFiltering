@@ -1,7 +1,7 @@
 from scipy import signal
 import numpy as np
 import pyqtgraph
-from src.wavfile import WavFile
+from wavfile import WavFile
 
 
 def get_spectrogram(wav: WavFile, graphics_layout: pyqtgraph.GraphicsLayoutWidget):
