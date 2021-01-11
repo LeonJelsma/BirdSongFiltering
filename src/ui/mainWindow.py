@@ -1,6 +1,9 @@
 import concurrent
 import os
+import threading
 from os.path import join
+
+from PyQt5.QtCore import QThread
 
 from algorithms import fft_algorithm
 import numpy as np
@@ -13,7 +16,7 @@ from pyqtgraph import GraphicsLayoutWidget, QtCore, mkPen
 from wrapt import synchronized
 import const, util
 from filters import filters
-from filters.FilterThread import FilterThread
+from filters.FilterWorker import FilterWorker
 from plots import spectrogram
 from plots import raw_audio
 from wavfile import WavFile
@@ -33,8 +36,8 @@ for folder in [x[0] for x in os.walk(const.LABELED_BIRD_SOUNDS_DIR)]:
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
-        # pyqtgraph.setConfigOption('background', 'w')
-        # pyqtgraph.setConfigOption('foreground', 'k')
+        pyqtgraph.setConfigOption('background', 'w')
+        pyqtgraph.setConfigOption('foreground', 'k')
         uic.loadUi(util.get_ui_file("mainWindow.ui"), self)
         self.setWindowIcon(QtGui.QIcon(util.get_asset("icon.png")))
         # self.setStyleSheet(open(util.get_style("light.qss")).read())
@@ -122,6 +125,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.unfiltered_magnitude_graph.addLegend()
         self.filtered_magnitude_graph.addLegend()
         self.draw_unfiltered_graphs()
+        self.filter_worker: FilterWorker = None
+        self.thread: QThread = None
 
     @staticmethod
     def on_change_example(name, widget: GraphicsLayoutWidget):
@@ -221,12 +226,14 @@ class MainWindow(QtWidgets.QMainWindow):
         max_freq = self.top_freq_input.toPlainText()
         self.waitingSpinner.start()
         self.statusLabel.setText("Filtering...")
-        t = FilterThread(wav=self.selected_wav, min_freq=int(min_freq), max_freq=int(max_freq),
-                         audio_filter=filters.get_butterworth_filter(),
-                         return_func=self.set_filtered_data)
-        t.start()
+        self.filter_worker = FilterWorker(wav=self.selected_wav, min_freq=int(min_freq), max_freq=int(max_freq),
+                         audio_filter=filters.get_butterworth_filter())
+        self.thread = QThread()
+        self.filter_worker.moveToThread(self.thread)
+        self.filter_worker.finished.connect(self.set_filtered_data)
+        self.thread.started.connect(self.filter_worker.run)
+        self.thread.start()
 
-    @synchronized
     def set_filtered_data(self, wav):
         self.filtered_wav = wav
         self.draw_filtered_graphs()
