@@ -1,5 +1,4 @@
 from numpy import pi, sqrt, array, int16
-from scipy.io import wavfile
 
 # BOTTOM_FREQUENCY = 2000
 # TOP_FREQUENCY = 10000
@@ -34,8 +33,8 @@ class ButterworthFilter():
         Yn_1 = -(-4*B_Val-2*C_Val+2*E_Val+4*F_Val)/BCDEF # Value of Y[n-1]
 
         if test == True: # For testing only
-            print(f"Y[n] = {Xn_4}X[n-4] + {Xn_2}X[n-2] + {Xn}X[n] + {Yn_4}Y[n-4] + {Yn_3}Y[n-3] + {Yn_2}Y[n-2] + {Yn_1}Y[n-1]")
-        
+            #print(f"Y[n] = {Xn_4}X[n-4] + {Xn_2}X[n-2] + {Xn}X[n] + {Yn_4}Y[n-4] + {Yn_3}Y[n-3] + {Yn_2}Y[n-2] + {Yn_1}Y[n-1]")
+            pass
         bandpass = [Xn_4, Xn_2, Xn, Yn_4, Yn_3, Yn_2, Yn_1]
         return bandpass
 
