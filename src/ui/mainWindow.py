@@ -36,11 +36,8 @@ for folder in [x[0] for x in os.walk(const.LABELED_BIRD_SOUNDS_DIR)]:
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
-        pyqtgraph.setConfigOption('background', 'w')
-        pyqtgraph.setConfigOption('foreground', 'k')
         uic.loadUi(util.get_ui_file("mainWindow.ui"), self)
         self.setWindowIcon(QtGui.QIcon(util.get_asset("icon.png")))
-        # self.setStyleSheet(open(util.get_style("light.qss")).read())
         self.setWindowTitle("Bird song recognizer")
         self.selectedFileDisplay.setText("Please select a file...")
         self.selectFileButton.clicked.connect(self.open_file_dialog)
