@@ -11,11 +11,11 @@ from PyQt5.QtWidgets import QFileDialog, QMessageBox, QWidget, QComboBox
 from PyQt5 import QtGui
 from pyqtgraph import GraphicsLayoutWidget, QtCore
 from wrapt import synchronized
-from src import const, util
-from src.filters import filters
-from src.filters.FilterThread import FilterThread
-from src.plots import spectrogram
-from src.wavfile import WavFile
+import const, util
+from filters import filters
+from filters.FilterThread import FilterThread
+from plots import spectrogram
+from wavfile import WavFile
 
 FILTERS = {
     "Butterworth": filters.get_butterworth_filter,

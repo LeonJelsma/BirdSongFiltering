@@ -1,8 +1,8 @@
-from src.Butterworth import ButterworthFilter
+from Butterworth import ButterworthFilter
 from numpy import exp, sqrt, pi, int16, array
 from scipy.io import wavfile
 
-from src.wavfile import WavFile
+from wavfile import WavFile
 
 BOTTOM_FREQUENCY = 6000
 TOP_FREQUENCY = 8000

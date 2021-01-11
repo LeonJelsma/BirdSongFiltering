@@ -1,7 +1,7 @@
 from numpy import pi, sqrt, array, int16
 from scipy.io import wavfile
 
-from src.wavfile import WavFile
+from wavfile import WavFile
 
 BOTTOM_FREQUENCY = 6000
 TOP_FREQUENCY = 8000
