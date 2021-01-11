@@ -1,6 +1,6 @@
 import os
 from os.path import join
-from src import const
+import const
 from scipy.io import wavfile
 
 from wavfile import WavFile
