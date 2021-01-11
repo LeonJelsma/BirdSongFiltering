@@ -232,6 +232,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.thread.start()
 
     def set_filtered_data(self, wav):
+        self.thread.quit()
         self.filtered_wav = wav
         self.draw_filtered_graphs()
         self.statusLabel.setText("Done!")
