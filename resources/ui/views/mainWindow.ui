@@ -19,7 +19,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <widget class="QTabWidget" name="tabWidget">
+     <widget class="QTabWidget" name="tab_view">
       <property name="maximumSize">
        <size>
         <width>1554</width>
@@ -117,10 +117,10 @@
              <widget class="QtWaitingSpinner" name="waitingSpinner" native="true">
               <property name="geometry">
                <rect>
-                <x>240</x>
-                <y>500</y>
-                <width>20</width>
-                <height>20</height>
+                <x>250</x>
+                <y>440</y>
+                <width>31</width>
+                <height>31</height>
                </rect>
               </property>
              </widget>
@@ -176,6 +176,101 @@
                <string>Reset</string>
               </property>
              </widget>
+             <widget class="QPushButton" name="save_wav_button">
+              <property name="geometry">
+               <rect>
+                <x>440</x>
+                <y>610</y>
+                <width>93</width>
+                <height>28</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Save output</string>
+              </property>
+             </widget>
+             <widget class="QPlainTextEdit" name="top_freq_input">
+              <property name="geometry">
+               <rect>
+                <x>360</x>
+                <y>490</y>
+                <width>161</width>
+                <height>31</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QPlainTextEdit" name="bottom_freq_input">
+              <property name="geometry">
+               <rect>
+                <x>360</x>
+                <y>530</y>
+                <width>161</width>
+                <height>31</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_2">
+              <property name="geometry">
+               <rect>
+                <x>260</x>
+                <y>490</y>
+                <width>91</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Top frequency:</string>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_3">
+              <property name="geometry">
+               <rect>
+                <x>240</x>
+                <y>530</y>
+                <width>111</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Bottom frequency:</string>
+              </property>
+             </widget>
+             <widget class="QComboBox" name="filter_selection">
+              <property name="geometry">
+               <rect>
+                <x>358</x>
+                <y>440</y>
+                <width>161</width>
+                <height>22</height>
+               </rect>
+              </property>
+             </widget>
+             <widget class="QLabel" name="label_4">
+              <property name="geometry">
+               <rect>
+                <x>290</x>
+                <y>440</y>
+                <width>71</width>
+                <height>20</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Filter type:</string>
+              </property>
+             </widget>
+             <widget class="QPushButton" name="use_as_input_button">
+              <property name="geometry">
+               <rect>
+                <x>340</x>
+                <y>610</y>
+                <width>93</width>
+                <height>28</height>
+               </rect>
+              </property>
+              <property name="text">
+               <string>Use as input</string>
+              </property>
+             </widget>
             </widget>
            </item>
           </layout>
@@ -183,20 +278,243 @@
          <item>
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
-            <widget class="PlotWidget" name="unfilteredGraph"/>
+            <widget class="PlotWidget" name="raw_audio_graph"/>
            </item>
            <item>
-            <widget class="PlotWidget" name="filteredGraph"/>
+            <widget class="QTabWidget" name="tabWidget">
+             <property name="currentIndex">
+              <number>0</number>
+             </property>
+             <widget class="QWidget" name="tab">
+              <attribute name="title">
+               <string>Unfiltered</string>
+              </attribute>
+              <widget class="PlotWidget" name="unfiltered_magnitude_graph">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>761</width>
+                 <height>381</height>
+                </rect>
+               </property>
+              </widget>
+             </widget>
+             <widget class="QWidget" name="tab_2">
+              <attribute name="title">
+               <string>Filtered</string>
+              </attribute>
+              <widget class="PlotWidget" name="filtered_magnitude_graph">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>761</width>
+                 <height>381</height>
+                </rect>
+               </property>
+              </widget>
+             </widget>
+            </widget>
            </item>
           </layout>
          </item>
         </layout>
        </widget>
       </widget>
-      <widget class="QWidget" name="tab_2">
+      <widget class="QWidget" name="SpectrogramTab">
        <attribute name="title">
-        <string>Tab 2</string>
+        <string>Spectrogram</string>
        </attribute>
+       <widget class="GraphicsLayoutWidget" name="filtered_spectrogram" native="true">
+        <property name="geometry">
+         <rect>
+          <x>810</x>
+          <y>430</y>
+          <width>661</width>
+          <height>421</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="GraphicsLayoutWidget" name="unfiltered_spectrogram" native="true">
+        <property name="geometry">
+         <rect>
+          <x>810</x>
+          <y>10</y>
+          <width>661</width>
+          <height>411</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_5">
+        <property name="geometry">
+         <rect>
+          <x>720</x>
+          <y>30</y>
+          <width>71</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Unfiltered:</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_6">
+        <property name="geometry">
+         <rect>
+          <x>730</x>
+          <y>460</y>
+          <width>71</width>
+          <height>21</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Filtered:</string>
+        </property>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="ExampleTab">
+       <attribute name="title">
+        <string>Examples</string>
+       </attribute>
+       <widget class="QComboBox" name="selected_example_2">
+        <property name="geometry">
+         <rect>
+          <x>100</x>
+          <y>110</y>
+          <width>161</width>
+          <height>31</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="selected_example_3">
+        <property name="geometry">
+         <rect>
+          <x>100</x>
+          <y>150</y>
+          <width>161</width>
+          <height>31</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QComboBox" name="selected_example_1">
+        <property name="geometry">
+         <rect>
+          <x>100</x>
+          <y>70</y>
+          <width>161</width>
+          <height>31</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="GraphicsLayoutWidget" name="selected_example_spectrogram_3" native="true">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>440</y>
+          <width>661</width>
+          <height>411</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="GraphicsLayoutWidget" name="selected_example_spectrogram_2" native="true">
+        <property name="geometry">
+         <rect>
+          <x>680</x>
+          <y>440</y>
+          <width>661</width>
+          <height>411</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="GraphicsLayoutWidget" name="selected_example_spectrogram_1" native="true">
+        <property name="geometry">
+         <rect>
+          <x>680</x>
+          <y>20</y>
+          <width>661</width>
+          <height>411</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_7">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>70</y>
+          <width>81</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Example 1</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_8">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>110</y>
+          <width>81</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Example 2</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_9">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>150</y>
+          <width>81</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Example 3</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_10">
+        <property name="geometry">
+         <rect>
+          <x>590</x>
+          <y>20</y>
+          <width>81</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Example 1</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_11">
+        <property name="geometry">
+         <rect>
+          <x>590</x>
+          <y>390</y>
+          <width>81</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Example 2</string>
+        </property>
+       </widget>
+       <widget class="QLabel" name="label_12">
+        <property name="geometry">
+         <rect>
+          <x>20</x>
+          <y>400</y>
+          <width>81</width>
+          <height>31</height>
+         </rect>
+        </property>
+        <property name="text">
+         <string>Example 3</string>
+        </property>
+       </widget>
       </widget>
      </widget>
     </item>
@@ -214,6 +532,12 @@
    <class>QtWaitingSpinner</class>
    <extends>QWidget</extends>
    <header>QtWaitingSpinner.QtWaitingSpinner</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>GraphicsLayoutWidget</class>
+   <extends>QWidget</extends>
+   <header>pyqtgraph</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

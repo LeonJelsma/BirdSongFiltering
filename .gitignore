@@ -22,3 +22,7 @@ src/ui/__pycache__/
 *.pyc
 
 src/filters/__pycache__/
+
+output/
+
+venv/
