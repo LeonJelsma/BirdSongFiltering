@@ -253,7 +253,7 @@ class MainWindow(QtWidgets.QMainWindow):
             freq = (1 / (dt * n)) * np.arange(n)
             L = np.arange(1, np.floor(n / 2), dtype='int')
             self.filtered_magnitude_graph.plot(freq[L], np.asarray(PSD[L], dtype='float'),
-                                                 pen=pyqtgraph.mkPen('y', width=1), name="Unfiltered")
+                                                 pen=pyqtgraph.mkPen('y', width=1), name="Filtered")
 
             self.raw_audio_graph.show()
             spectrogram.get_spectrogram(self.filtered_wav, self.filtered_spectrogram)
