@@ -2,7 +2,7 @@ import concurrent
 import os
 from os.path import join
 
-import numpy
+from algorithms import fft_algorithm
 import numpy as np
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtGui import QMovie, QColor
@@ -84,7 +84,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.save_wav_button.clicked.connect(self.save_filtered_result)
         self.use_as_input_button.clicked.connect(self.use_result_as_input)
         self.autoRangeUnfiltered.clicked.connect(self.auto_range_raw_audio_graph)
-        self.autoRangeFiltered.clicked.connect(self.auto_range_filtered)
+        self.autoRangeFiltered.clicked.connect(self.auto_range_magnitude_graphs)
         self.resetButton.clicked.connect(self.clear_graphs)
         self.statusLabel.setText("No task")
 
@@ -97,7 +97,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.top_freq_input.setPlainText("8000")
 
         self.raw_audio_graph.setMouseEnabled(x=False, y=False)
-        self.filteredGraph.setMouseEnabled(x=False, y=False)
+        self.unfiltered_magnitude_graph.setMouseEnabled(x=False, y=False)
+        self.filtered_magnitude_graph.setMouseEnabled(x=False, y=False)
 
         spinner = self.waitingSpinner
         spinner.setRoundness(70.0)
@@ -118,6 +119,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.filtered_wav: WavFile = None
         self.selected_wav: WavFile = None
         self.raw_audio_graph.addLegend()
+        self.unfiltered_magnitude_graph.addLegend()
+        self.filtered_magnitude_graph.addLegend()
         self.draw_unfiltered_graphs()
 
     @staticmethod
@@ -150,7 +153,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.raw_audio_graph.setXRange(min=0, max=1)
         # self.unfilteredGraph.setYRange(min=0, max=1)
         # self.unfilteredGraph.setXRange(min=0, max=1)
-        self.filteredGraph.clear()
+        self.unfiltered_magnitude_graph.clear()
+        self.filtered_magnitude_graph.clear()
         self.raw_audio_graph.clear()
 
     def update_selected_wav(self, file):
@@ -184,17 +188,33 @@ class MainWindow(QtWidgets.QMainWindow):
         self.raw_audio_graph.setYRange(min=-30000, max=30000)
         self.raw_audio_graph.setXRange(min=0, max=(self.selected_wav.frames / self.selected_wav.rate))
 
-    def auto_range_filtered(self):
-        self.filteredGraph.setYRange(min=-30000, max=30000)
-        self.filteredGraph.setXRange(min=0, max=(self.selected_wav.frames / self.selected_wav.rate))
+    def auto_range_magnitude_graphs(self):
+        self.unfiltered_magnitude_graph.setXRange(min=0, max=self.selected_wav.frames)
+        self.filtered_magnitude_graph.setXRange(min=0, max=self.selected_wav.frames)
 
     def draw_unfiltered_graphs(self):
         if self.selected_wav:
             data = np.fromstring(self.selected_wav.data, "Int16")
             time = np.arange(0, self.selected_wav.frames) * (1.0 / self.selected_wav.rate)
+            # Raw audio graph
             self.raw_audio_graph.plot(x=time, y=data, pen=pyqtgraph.mkPen('b', width=1), name="Unfiltered")
             self.auto_range_raw_audio_graph()
             self.raw_audio_graph.show()
+
+            # Magnitude graph
+            dt = 1 / self.selected_wav.rate
+            t = np.arange(0, len(data) / self.selected_wav.rate, dt)
+            n = len(t)
+            fhat = fft_algorithm.FFT_vectorized(data)
+            PSD = fhat * np.conj(fhat) / n
+            freq = (1 / (dt * n)) * np.arange(n)
+            L = np.arange(1, np.floor(n / 2), dtype='int')
+            y = freq[L]
+            x = np.asarray(PSD[L], dtype='float')
+            self.unfiltered_magnitude_graph.plot(freq[L], np.asarray(PSD[L], dtype='float'),
+                                                 pen=pyqtgraph.mkPen('b', width=1), name="Unfiltered")
+
+            # Spectrogram graph
             spectrogram.get_spectrogram(self.selected_wav, self.unfiltered_spectrogram)
 
     def filter_wav(self):
@@ -217,8 +237,19 @@ class MainWindow(QtWidgets.QMainWindow):
     def draw_filtered_graphs(self):
         if self.filtered_wav:
             time = np.arange(0, self.filtered_wav.frames) * (1.0 / self.filtered_wav.rate)
+            # Raw audio
             self.raw_audio_graph.plot(x=time, y=self.filtered_wav.data, pen=pyqtgraph.mkPen('y', width=1),
                                       name="Filtered")
-            self.auto_range_filtered()
+            # Magnitude graph
+            dt = 1 / self.filtered_wav.rate
+            t = np.arange(0, len(self.filtered_wav.data) / self.selected_wav.rate, dt)
+            n = len(t)
+            fhat = fft_algorithm.FFT_vectorized(self.filtered_wav.data)
+            PSD = fhat * np.conj(fhat) / n
+            freq = (1 / (dt * n)) * np.arange(n)
+            L = np.arange(1, np.floor(n / 2), dtype='int')
+            self.filtered_magnitude_graph.plot(freq[L], np.asarray(PSD[L], dtype='float'),
+                                                 pen=pyqtgraph.mkPen('y', width=1), name="Unfiltered")
+
             self.raw_audio_graph.show()
             spectrogram.get_spectrogram(self.filtered_wav, self.filtered_spectrogram)

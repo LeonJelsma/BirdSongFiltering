@@ -281,7 +281,41 @@
             <widget class="PlotWidget" name="raw_audio_graph"/>
            </item>
            <item>
-            <widget class="PlotWidget" name="filteredGraph"/>
+            <widget class="QTabWidget" name="tabWidget">
+             <property name="currentIndex">
+              <number>0</number>
+             </property>
+             <widget class="QWidget" name="tab">
+              <attribute name="title">
+               <string>Unfiltered</string>
+              </attribute>
+              <widget class="PlotWidget" name="unfiltered_magnitude_graph">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>761</width>
+                 <height>381</height>
+                </rect>
+               </property>
+              </widget>
+             </widget>
+             <widget class="QWidget" name="tab_2">
+              <attribute name="title">
+               <string>Filtered</string>
+              </attribute>
+              <widget class="PlotWidget" name="filtered_magnitude_graph">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>761</width>
+                 <height>381</height>
+                </rect>
+               </property>
+              </widget>
+             </widget>
+            </widget>
            </item>
           </layout>
          </item>
