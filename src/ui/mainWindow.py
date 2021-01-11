@@ -219,7 +219,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def filter_wav(self):
         min_freq = self.bottom_freq_input.toPlainText()
         max_freq = self.top_freq_input.toPlainText()
-        #self.waitingSpinner.start()
+        self.waitingSpinner.start()
         self.statusLabel.setText("Filtering...")
         t = FilterThread(wav=self.selected_wav, min_freq=int(min_freq), max_freq=int(max_freq),
                          audio_filter=filters.get_butterworth_filter(),
@@ -231,7 +231,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.filtered_wav = wav
         self.draw_filtered_graphs()
         self.statusLabel.setText("Done!")
-        #self.waitingSpinner.stop()
+        self.waitingSpinner.stop()
 
     def draw_filtered_graphs(self):
         if self.filtered_wav:
