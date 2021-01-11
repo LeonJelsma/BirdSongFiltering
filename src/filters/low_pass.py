@@ -7,7 +7,7 @@ from wave import Wave_read
 from pandas import np
 from scipy.signal import butter, filtfilt
 
-from src import util, const
+import util, const
 
 def butter_lowpass_filter(data, cutoff, fs, order):
     normal_cutoff = cutoff / nyq

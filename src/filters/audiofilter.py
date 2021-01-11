@@ -1,4 +1,4 @@
-from src.wavfile import WavFile
+from wavfile import WavFile
 
 
 class AudioFilter:

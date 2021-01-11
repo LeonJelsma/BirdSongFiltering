@@ -1,7 +1,7 @@
 import threading
 
-from src.filters.audiofilter import AudioFilter
-from src.wavfile import WavFile
+from filters.audiofilter import AudioFilter
+from wavfile import WavFile
 
 
 class FilterThread(threading.Thread):

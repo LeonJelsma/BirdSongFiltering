@@ -1,6 +1,6 @@
-from src.filters import butterworth_filter
-from src.filters import fft_function
-from src.filters.audiofilter import AudioFilter
+from filters import butterworth_filter
+from filters import fft_function
+from filters.audiofilter import AudioFilter
 
 
 def test_filter(x):
