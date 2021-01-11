@@ -6,15 +6,16 @@ import numpy
 import numpy as np
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtGui import QMovie, QColor
-
+import pyqtgraph
 from PyQt5.QtWidgets import QFileDialog, QMessageBox, QWidget, QComboBox
 from PyQt5 import QtGui
-from pyqtgraph import GraphicsLayoutWidget, QtCore
+from pyqtgraph import GraphicsLayoutWidget, QtCore, mkPen
 from wrapt import synchronized
 import const, util
 from filters import filters
 from filters.FilterThread import FilterThread
 from plots import spectrogram
+from plots import raw_audio
 from wavfile import WavFile
 
 FILTERS = {
@@ -32,9 +33,9 @@ for folder in [x[0] for x in os.walk(const.LABELED_BIRD_SOUNDS_DIR)]:
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
-
+        # pyqtgraph.setConfigOption('background', 'w')
+        # pyqtgraph.setConfigOption('foreground', 'k')
         uic.loadUi(util.get_ui_file("mainWindow.ui"), self)
-        test = util.get_asset("icon.png")
         self.setWindowIcon(QtGui.QIcon(util.get_asset("icon.png")))
         # self.setStyleSheet(open(util.get_style("light.qss")).read())
         self.setWindowTitle("Bird song recognizer")
@@ -82,7 +83,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.save_wav_button.clicked.connect(self.save_filtered_result)
         self.use_as_input_button.clicked.connect(self.use_result_as_input)
-        self.autoRangeUnfiltered.clicked.connect(self.auto_range_unfiltered)
+        self.autoRangeUnfiltered.clicked.connect(self.auto_range_raw_audio_graph)
         self.autoRangeFiltered.clicked.connect(self.auto_range_filtered)
         self.resetButton.clicked.connect(self.clear_graphs)
         self.statusLabel.setText("No task")
@@ -95,7 +96,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.bottom_freq_input.setPlainText("3000")
         self.top_freq_input.setPlainText("8000")
 
-        self.unfilteredGraph.setMouseEnabled(x=False, y=False)
+        self.raw_audio_graph.setMouseEnabled(x=False, y=False)
         self.filteredGraph.setMouseEnabled(x=False, y=False)
 
         spinner = self.waitingSpinner
@@ -116,6 +117,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         self.filtered_wav: WavFile = None
         self.selected_wav: WavFile = None
+        self.raw_audio_graph.addLegend()
         self.draw_unfiltered_graphs()
 
     @staticmethod
@@ -144,12 +146,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.draw_filtered_graphs()
 
     def clear_graphs(self):
-        self.unfilteredGraph.setYRange(min=0, max=1)
-        self.unfilteredGraph.setXRange(min=0, max=1)
-        self.unfilteredGraph.setYRange(min=0, max=1)
-        self.unfilteredGraph.setXRange(min=0, max=1)
+        self.raw_audio_graph.setYRange(min=0, max=1)
+        self.raw_audio_graph.setXRange(min=0, max=1)
+        # self.unfilteredGraph.setYRange(min=0, max=1)
+        # self.unfilteredGraph.setXRange(min=0, max=1)
         self.filteredGraph.clear()
-        self.unfilteredGraph.clear()
+        self.raw_audio_graph.clear()
 
     def update_selected_wav(self, file):
         path = os.path.normpath(file)
@@ -178,9 +180,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
         error_window.exec_()
 
-    def auto_range_unfiltered(self):
-        self.unfilteredGraph.setYRange(min=-30000, max=30000)
-        self.unfilteredGraph.setXRange(min=0, max=(self.selected_wav.frames / self.selected_wav.rate))
+    def auto_range_raw_audio_graph(self):
+        self.raw_audio_graph.setYRange(min=-30000, max=30000)
+        self.raw_audio_graph.setXRange(min=0, max=(self.selected_wav.frames / self.selected_wav.rate))
 
     def auto_range_filtered(self):
         self.filteredGraph.setYRange(min=-30000, max=30000)
@@ -190,11 +192,9 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.selected_wav:
             data = np.fromstring(self.selected_wav.data, "Int16")
             time = np.arange(0, self.selected_wav.frames) * (1.0 / self.selected_wav.rate)
-
-            self.unfilteredGraph.disableAutoRange()
-            self.unfilteredGraph.plot(time, data)
-            self.auto_range_unfiltered()
-            self.unfilteredGraph.show()
+            self.raw_audio_graph.plot(x=time, y=data, pen=pyqtgraph.mkPen('b', width=1), name="Unfiltered")
+            self.auto_range_raw_audio_graph()
+            self.raw_audio_graph.show()
             spectrogram.get_spectrogram(self.selected_wav, self.unfiltered_spectrogram)
 
     def filter_wav(self):
@@ -217,7 +217,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def draw_filtered_graphs(self):
         if self.filtered_wav:
             time = np.arange(0, self.filtered_wav.frames) * (1.0 / self.filtered_wav.rate)
-            self.filteredGraph.plot(time, self.filtered_wav.data)
+            self.raw_audio_graph.plot(x=time, y=self.filtered_wav.data, pen=pyqtgraph.mkPen('y', width=1),
+                                      name="Filtered")
             self.auto_range_filtered()
-            self.filteredGraph.show()
+            self.raw_audio_graph.show()
             spectrogram.get_spectrogram(self.filtered_wav, self.filtered_spectrogram)

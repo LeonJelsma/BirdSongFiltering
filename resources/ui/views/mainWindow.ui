@@ -27,7 +27,7 @@
        </size>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="FilterTab">
        <attribute name="title">
@@ -278,7 +278,7 @@
          <item>
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
-            <widget class="PlotWidget" name="unfilteredGraph"/>
+            <widget class="PlotWidget" name="raw_audio_graph"/>
            </item>
            <item>
             <widget class="PlotWidget" name="filteredGraph"/>
