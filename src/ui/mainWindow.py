@@ -151,13 +151,12 @@ class MainWindow(QtWidgets.QMainWindow):
     def clear_graphs(self):
         self.raw_audio_graph.setYRange(min=0, max=1)
         self.raw_audio_graph.setXRange(min=0, max=1)
-        # self.unfilteredGraph.setYRange(min=0, max=1)
-        # self.unfilteredGraph.setXRange(min=0, max=1)
         self.unfiltered_magnitude_graph.clear()
         self.filtered_magnitude_graph.clear()
         self.raw_audio_graph.clear()
 
     def update_selected_wav(self, file):
+        self.clear_graphs()
         path = os.path.normpath(file)
         file_name = os.path.basename(os.path.normpath(file))
         self.selected_wav = util.open_wav(path)
