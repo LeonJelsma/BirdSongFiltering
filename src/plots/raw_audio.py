@@ -1,6 +1,7 @@
 import numpy as np
 from matplotlib.figure import Figure
 
+
 def get_raw_audio_graph(title):
     figure = Figure()
     figure.suptitle(title)

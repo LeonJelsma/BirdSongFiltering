@@ -2,13 +2,16 @@ import os
 from os.path import join
 import const
 from scipy.io import wavfile
-
 from wavfile import WavFile
 
 
 def open_wav(path):
     rate, data = wavfile.read(os.path.normpath(path))
     return WavFile(name=os.path.basename(os.path.normpath(path)), rate=rate, data=data)
+
+
+def init_folders():
+    pass
 
 
 def write_wav(wav_file: WavFile):
